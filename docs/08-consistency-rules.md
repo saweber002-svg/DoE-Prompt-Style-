@@ -1,5 +1,7 @@
 # 08 — Consistency rules (binding on every change)
 
+**Status:** These rules remain binding. Owner formula (2026-10-22) is the calculator source of truth; research report remains the provenance annex.
+
 These rules exist so the app never drifts from the evidence or from itself. They outrank convenience, deadlines, and aesthetics.
 
 ## Data integrity law
