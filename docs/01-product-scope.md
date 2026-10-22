@@ -1,6 +1,6 @@
 # 01 — Product scope
 
-**Status:** Calculator and guide foundation are live in main. Ring values remain user-entered until owner-measured drops land.
+**Status:** Foundation + UI Stage 1 merged. Pages pending owner’s two manual actions. Ring values remain user-entered until owner-measured drops land. Active work: UI completion II + codebase hardening.
 
 ## What Damage of Eternity is
 
