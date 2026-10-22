@@ -9,12 +9,31 @@ import { TheChain } from './components/TheChain';
 import { LabNotes } from './components/LabNotes';
 import { MenuSigil } from './components/Sigil';
 import { SettingsBar } from './components/SettingsBar';
+import type { Build } from './engine/types';
 
 const SCREENS = ['Main Menu', 'Sandbox', 'Enemies', 'Combos', 'Perks', 'EXO', 'Rings', 'The Chain', 'Lab Notes'] as const;
 type Screen = typeof SCREENS[number];
 
+const DEFAULT_BUILD: Build = {
+  baseDamage: 120,
+  grip: '1H',
+  attackType: 'swing',
+  weaponPerks: [],
+  element: null,
+  exo: { powerPullback: false, might: false, pierce: false, exoCriticals: false },
+  rings: [{ name: null, userValue: null }, { name: null, userValue: null }],
+  situations: { firstStrike: false, targetPoisoned: false, targetStaggered: false, fromBehind: false },
+  tier: 4,
+};
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>('Main Menu');
+  const [sandboxBuild, setSandboxBuild] = useState<Build>(DEFAULT_BUILD);
+
+  const loadPreset = (partial: Partial<Build>) => {
+    setSandboxBuild(prev => ({ ...prev, ...partial }));
+    setScreen('Sandbox');
+  };
 
   return (
     <div className="app-root">
@@ -55,13 +74,13 @@ export default function App() {
         </div>
       )}
 
-      {screen === 'Sandbox' && <Sandbox />}
+      {screen === 'Sandbox' && <Sandbox initialBuild={sandboxBuild} onBuildChange={setSandboxBuild} />}
       {screen === 'Enemies' && <EnemySelect />}
       {screen === 'Combos' && <Combos />}
       {screen === 'Perks' && <Perks />}
       {screen === 'EXO' && <ExoBoard />}
       {screen === 'Rings' && <RingsVault />}
-      {screen === 'The Chain' && <TheChain />}
+      {screen === 'The Chain' && <TheChain onPreset={loadPreset} />}
       {screen === 'Lab Notes' && <LabNotes />}
       <SettingsBar />
     </div>

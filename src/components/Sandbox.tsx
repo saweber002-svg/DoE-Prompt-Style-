@@ -1,17 +1,24 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { loadAll } from '../data/loader';
 import { evaluateHit } from '../engine/formula';
-import type { Build, Target } from '../engine/types';
+import type { Build, Target, WeaponType } from '../engine/types';
 import { ThreeNumbers, FactorChain, ProcPips, DistributionBar, ZoneFigure } from './Signature';
 
 const { enemies: enemiesData, damageModel } = loadAll();
 const roster = enemiesData.enemies.filter((e: any) => e.roster);
 const weaponPerks = (damageModel as any).weaponPerks?.perks ?? [];
 
+const WEAPON_TYPES: WeaponType[] = [
+  'axe', 'hammer', 'spear', 'greatsword',
+  'sword', 'longsword', 'dagger', 'bow', 'crossbow',
+  'staff', 'shield', 'club', 'sickle', 'other',
+];
+
 const DEFAULT_BUILD: Build = {
   baseDamage: 120,
   grip: '1H',
   attackType: 'swing',
+  weaponType: undefined,
   weaponPerks: [],
   element: null,
   exo: { powerPullback: false, might: false, pierce: false, exoCriticals: false },
@@ -20,10 +27,23 @@ const DEFAULT_BUILD: Build = {
   tier: 4,
 };
 
-export function Sandbox() {
-  const [build, setBuild] = useState<Build>(DEFAULT_BUILD);
+interface SandboxProps {
+  initialBuild?: Build;
+  onBuildChange?: (b: Build) => void;
+}
+
+export function Sandbox({ initialBuild, onBuildChange }: SandboxProps) {
+  const [build, setBuild] = useState<Build>(initialBuild ?? DEFAULT_BUILD);
   const [enemyId, setEnemyId] = useState('wasp');
   const [zoneIdx, setZoneIdx] = useState(0);
+
+  useEffect(() => {
+    if (initialBuild) setBuild(initialBuild);
+  }, [initialBuild]);
+
+  useEffect(() => {
+    onBuildChange?.(build);
+  }, [build, onBuildChange]);
 
   const enemy = roster.find((e: any) => e.id === enemyId) ?? roster[0];
   const zones = enemy?.zones ?? [];
@@ -42,16 +62,24 @@ export function Sandbox() {
     setBuild({ ...build, weaponPerks: next });
   };
 
+  const handlingEligible = build.grip === '2H' && ['axe', 'hammer', 'spear', 'greatsword'].includes(build.weaponType ?? '');
+
   return (
     <div className="flex flex-col lg:flex-row gap-4 p-4 min-h-[calc(100vh-60px)]">
       <aside className="panel w-full lg:w-80 p-4 space-y-3 overflow-y-auto max-h-[80vh]">
         <h2 className="display text-lg">Loadout Builder</h2>
+        <label className="block text-xs text-amber-200/70">Target Enemy
+          <select value={enemyId} onChange={e => { setEnemyId(e.target.value); setZoneIdx(0); }} className="w-full mt-1 bg-black/40 border border-amber-800/50 rounded px-3 py-2 text-amber-100">
+            {roster.map((e: any) => <option key={e.id} value={e.id}>{e.name}</option>)}
+          </select>
+        </label>
         <label className="block text-xs text-amber-200/70">Base Damage
           <input type="number" value={build.baseDamage} onChange={e => setBuild({ ...build, baseDamage: Number(e.target.value) || 0 })} className="w-full mt-1 bg-black/40 border border-amber-800/50 rounded px-3 py-2 text-amber-100" />
         </label>
-        <label className="block text-xs text-amber-200/70">Target
-          <select value={enemyId} onChange={e => { setEnemyId(e.target.value); setZoneIdx(0); }} className="w-full mt-1 bg-black/40 border border-amber-800/50 rounded px-3 py-2 text-amber-100">
-            {roster.map((e: any) => <option key={e.id} value={e.id}>{e.name}</option>)}
+        <label className="block text-xs text-amber-200/70">Weapon Type
+          <select value={build.weaponType ?? ''} onChange={e => setBuild({ ...build, weaponType: (e.target.value || undefined) as WeaponType | undefined })} className="w-full mt-1 bg-black/40 border border-amber-800/50 rounded px-3 py-2 text-amber-100">
+            <option value="">— none —</option>
+            {WEAPON_TYPES.map(w => <option key={w} value={w}>{w}</option>)}
           </select>
         </label>
         <label className="block text-xs text-amber-200/70">Grip
@@ -60,6 +88,7 @@ export function Sandbox() {
             <option value="2H">2H</option>
           </select>
         </label>
+        {handlingEligible && <div className="text-[10px] text-teal-300/80">Handling ×2 active (2H + axe/hammer/spear/greatsword)</div>}
         <label className="block text-xs text-amber-200/70">Attack
           <select value={build.attackType} onChange={e => setBuild({ ...build, attackType: e.target.value as any })} className="w-full mt-1 bg-black/40 border border-amber-800/50 rounded px-3 py-2 text-amber-100">
             <option value="swing">Swing</option>
@@ -76,10 +105,6 @@ export function Sandbox() {
             </button>
           ))}
         </div>
-        <label className="flex items-center gap-2 text-xs text-amber-200/70">
-          <input type="checkbox" checked={build.situations.firstStrike} onChange={e => setBuild({ ...build, situations: { ...build.situations, firstStrike: e.target.checked } })} className="accent-amber-500" />
-          First Strike
-        </label>
       </aside>
 
       <main className="flex-1 panel p-4 flex flex-col items-center">
