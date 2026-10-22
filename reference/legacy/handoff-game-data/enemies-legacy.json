@@ -1,0 +1,748 @@
+{
+  "meta": {
+    "researched": "2026-10-21",
+    "headlineFinding": "No per-zone damage multiplier table (head/chest/legs xN) is published ANYWHERE public for ANY enemy \u2014 not in official patch notes, either wiki, Steam guides/reviews, Reddit, or press. Zone damage is documented only qualitatively (weak spots, invulnerable bodies, armor).",
+    "globalMechanics": [
+      {
+        "name": "First strike",
+        "value": "3x damage on the first hit against an unaware enemy (OFFICIAL, Tomb Extraction, 21 Sep 2026). Situational, NOT a body zone."
+      },
+      {
+        "name": "Criticals (weapon perk)",
+        "value": "20-32% chance for 300% damage (COMMUNITY wiki). Crits are perk-based, not zone-based, per all documentation."
+      },
+      {
+        "name": "Spectral Echo (weapon perk)",
+        "value": "Delayed echo at double damage (OFFICIAL, Sep 2026)."
+      },
+      {
+        "name": "Damage numbers UI",
+        "value": "Since 21 Sep 2026 the game itself displays hit multipliers in a toggleable damage-numbers UI (OFFICIAL) \u2014 the only authoritative way to read zone multipliers is in-game measurement; no player has published measurements yet."
+      },
+      {
+        "name": "Arms are a zone",
+        "value": "Hitting a frozen enemy's weapon applies damage like hitting its arm (OFFICIAL, May 2024)."
+      },
+      {
+        "name": "Toughness tiers",
+        "value": "Light/Medium/Heavy/Elite/Legendary scale health, attack power and damage resistance (community) \u2014 resistance values never published."
+      },
+      {
+        "name": "Armor",
+        "value": "Armored enemies exist across types; NO armor damage-reduction % is published for any enemy."
+      }
+    ],
+    "statusKey": {
+      "owner-supplied-unverified": "from the owner's play; contradicted/unfound in public sources \u2014 label visibly",
+      "official": "named in official notes (usually: exists/tuned, no values)",
+      "community": "community wiki/review reported",
+      "not-documented": "searched; nothing public exists"
+    },
+    "ownerUpdate2026_10_20": "Owner corrections: 'Megamage' is his placeholder joke \u2014 the enemy is the Ubermage; ubermage figures head x3 / torso x2 / legs x3 (legs corrected from x1). Zombie, Skeleton, Knight, Octoculus ('ghosts'/'eyeballs'), and Wasp zone data added as owner-observed, ALL explicitly uncertain. Everything still missing stays an open input slot with a question \u2014 the recipient dev team holds the real statistics and fills them in."
+  },
+  "layerSpec": {
+    "fallback": "When no images are supplied for an enemy, the stage renders a generic CSS/SVG dummy figure using the same layer structure, with zones from hitboxZones.",
+    "imageWorkflow": "Research collects in-game mob images -> owner separates mob from background -> separated files are dropped into the slots above (paths/URLs) with no code changes.",
+    "layersBottomToTop": [
+      {
+        "content": "The enemy's environment/backdrop image (separated from the mob image)",
+        "layer": "background",
+        "parallaxDepth": 0.3,
+        "slot": "layers.backgroundImage"
+      },
+      {
+        "content": "The enemy figure image (separated, transparent background)",
+        "layer": "mob",
+        "parallaxDepth": 0.7,
+        "slot": "layers.mobImage"
+      },
+      {
+        "content": "Zone shapes + multiplier badges, generated from hitboxZones \u2014 always vector/DOM, never baked into the mob image, so multipliers stay editable data",
+        "layer": "hitbox-overlay",
+        "parallaxDepth": 0.7,
+        "slot": "generated from hitboxZones (follows the mob layer)"
+      },
+      {
+        "content": "Optional near-camera element (dust, vignette, grass) for extra depth",
+        "layer": "foreground (optional)",
+        "parallaxDepth": 1.0,
+        "slot": "layers.foregroundImage"
+      }
+    ],
+    "purpose": "Dummy hitbox models are rendered as separated 2D layers for a high-quality depth (2.5D parallax) effect at very low render cost \u2014 transforms only, no 3D engine, no per-frame repaint."
+  },
+  "enemies": [
+    {
+      "id": "megamage",
+      "name": "Megamage (placeholder name \u2014 actually the Ubermage)",
+      "status": "owner-observed-uncertain",
+      "enemyClass": "Sorcerer (boss)",
+      "where": null,
+      "dummyShape": "robed caster (generic humanoid)",
+      "hitboxZones": [
+        {
+          "zone": "head",
+          "label": "Head",
+          "multiplier": 3,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)"
+        },
+        {
+          "zone": "chest",
+          "label": "Torso",
+          "multiplier": 2,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)"
+        },
+        {
+          "zone": "legs",
+          "label": "Legs",
+          "multiplier": 3,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20); corrected by owner from the earlier x1 example"
+        }
+      ],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Owner's placeholder joke for the DEV TEAM: 'Megamage' is not a real enemy name \u2014 the enemy is the Ubermage (Uber Mage). Figures are the owner's observations from play, explicitly NOT certain. Public research found no zone data for any mage. Dev team: replace with verified Ubermage hitbox data.",
+      "alias": "Ubermage / Uber Mage",
+      "dataNeeded": [
+        "Megamage (placeholder name \u2014 actually the Ubermage) \u2014 Head: confirm or replace the owner-observed x3 (uncertain).",
+        "Megamage (placeholder name \u2014 actually the Ubermage) \u2014 Torso: confirm or replace the owner-observed x2 (uncertain).",
+        "Megamage (placeholder name \u2014 actually the Ubermage) \u2014 Legs: confirm or replace the owner-observed x3 (uncertain)."
+      ]
+    },
+    {
+      "id": "skeleton-mage",
+      "name": "Skeleton Mage",
+      "status": "not-documented",
+      "enemyClass": "Sorcerer",
+      "where": "All realms",
+      "dummyShape": "robed skeleton",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Sorcerer class; fireball staff; summons skeleton warriors and critters; weakness: Sorcerer Damage perk. Its wiki page contains no hitbox zones or multipliers. Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "Skeleton Mage: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "skeleton-minion",
+      "name": "Skeletons (Minion / Warrior / Archer)",
+      "status": "owner-observed-uncertain",
+      "enemyClass": "Undead / Skeleton",
+      "where": "All realms",
+      "dummyShape": "skeleton humanoid",
+      "hitboxZones": [
+        {
+          "zone": "head",
+          "label": "Head",
+          "multiplier": null,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)"
+        },
+        {
+          "zone": "chest",
+          "label": "Torso",
+          "multiplier": null,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)"
+        },
+        {
+          "zone": "arms",
+          "label": "Arms",
+          "multiplier": null,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)"
+        },
+        {
+          "zone": "legs",
+          "label": "Legs",
+          "multiplier": null,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)",
+          "note": "Community: skeletons cannot block attacks to their feet or legs."
+        }
+      ],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Owner believes zones are arms, torso, head, legs ('not 100%'). All multipliers unknown \u2014 dev team to supply. Armor varies scraps to full plate (fully armored can parry); higher-difficulty armor does not stop attacks landing. Shatter when frozen/bas hed; Crypt Hammer one-hit-kills ordinary skeletons. Multipliers: Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "Skeletons (Minion / Warrior / Archer) \u2014 Head: what is the damage multiplier? (slot open)",
+        "Skeletons (Minion / Warrior / Archer) \u2014 Torso: what is the damage multiplier? (slot open)",
+        "Skeletons (Minion / Warrior / Archer) \u2014 Arms: what is the damage multiplier? (slot open)",
+        "Skeletons (Minion / Warrior / Archer) \u2014 Legs: what is the damage multiplier? (slot open)"
+      ]
+    },
+    {
+      "id": "skeleton-boss",
+      "name": "Knight (Skeleton Boss / Skeleton Knight Boss)",
+      "status": "owner-observed-uncertain",
+      "enemyClass": "Undead / Skeleton (boss)",
+      "where": "All realms, all missions",
+      "dummyShape": "armored skeleton knight",
+      "hitboxZones": [
+        {
+          "zone": "face",
+          "label": "Head (face opening)",
+          "multiplier": null,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)",
+          "note": "Multiplier UNKNOWN \u2014 owner. Community: face is the only damaging weak spot for melee (wiki + Steam review). Dev team: what is the face multiplier?"
+        },
+        {
+          "zone": "chest",
+          "label": "Torso",
+          "multiplier": 0.01,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)",
+          "note": "Owner figure x0.01 (plate armor). Community: armor shrugs off swords/arrows; crossbow bolts pierce."
+        },
+        {
+          "zone": "arms",
+          "label": "Arms",
+          "multiplier": null,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)"
+        },
+        {
+          "zone": "legs",
+          "label": "Legs",
+          "multiplier": null,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)"
+        }
+      ],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Owner-observed zones (arms, legs, torso x0.01, head/face x unknown), none certain. Hit colliders officially adjusted Dec 2025 (no values). Immune to icing; weakness: Undead Damage perk. Drops (community): Coins 65% / Health Potion 20% / Key 15% \u2014 those are drop chances, NOT damage data.",
+      "dataNeeded": [
+        "Knight (Skeleton Boss / Skeleton Knight Boss) \u2014 Head (face opening): what is the damage multiplier? (slot open)",
+        "Knight (Skeleton Boss / Skeleton Knight Boss) \u2014 Torso: confirm or replace the owner-observed x0.01 (uncertain).",
+        "Knight (Skeleton Boss / Skeleton Knight Boss) \u2014 Arms: what is the damage multiplier? (slot open)",
+        "Knight (Skeleton Boss / Skeleton Knight Boss) \u2014 Legs: what is the damage multiplier? (slot open)"
+      ]
+    },
+    {
+      "id": "zombie",
+      "name": "Zombie",
+      "status": "owner-observed-uncertain",
+      "enemyClass": "Undead",
+      "where": "Underworld, Sandstorm, Lavaforge",
+      "dummyShape": "humanoid",
+      "hitboxZones": [
+        {
+          "zone": "head",
+          "label": "Head",
+          "multiplier": null,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)",
+          "note": "The ONLY viable damage zone \u2014 owner. (Community/Fandom, stale: head hits kill instantly.) Dev team: what is the head multiplier / is it instant-kill?"
+        },
+        {
+          "zone": "chest",
+          "label": "Torso",
+          "multiplier": null,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)",
+          "note": "Zone exists but damage here is not viable \u2014 owner. (Community/Fandom: body takes no damage.) Dev team: is torso damage exactly 0?"
+        },
+        {
+          "zone": "arms",
+          "label": "Arms",
+          "multiplier": null,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)",
+          "note": "Arms can be REMOVED by blocking the zombie's attacks with a blade \u2014 owner. Dev team: confirm the removal mechanic and whether arm hits deal damage before removal."
+        },
+        {
+          "zone": "legs",
+          "label": "Legs (?)",
+          "multiplier": null,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)",
+          "note": "Owner is unsure legs are a hit zone at all. Dev team: do legs exist as a zone? (Community: limbs can be chopped; legless zombies crawl.)"
+        }
+      ],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Owner-observed zones (arms, torso, legs?, head) with head as the only viable damage zone; arm removal via blade blocks. Community (Fandom, stale) agrees in spirit: body = no damage, head = instant kill.",
+      "dataNeeded": [
+        "Zombie \u2014 Head: what is the damage multiplier? (slot open)",
+        "Zombie \u2014 Torso: what is the damage multiplier? (slot open)",
+        "Zombie \u2014 Arms: what is the damage multiplier? (slot open)",
+        "Zombie \u2014 Legs (?): what is the damage multiplier? (slot open)"
+      ]
+    },
+    {
+      "id": "doomer",
+      "name": "The Doomer (zombie mini-boss)",
+      "status": "official",
+      "enemyClass": "Undead (mini-boss)",
+      "where": "Underworld, Sandstorm, Lavaforge",
+      "dummyShape": "large humanoid",
+      "hitboxZones": [
+        {
+          "zone": "head",
+          "label": "Head",
+          "multiplier": null,
+          "note": "Headshots officially confirmed ('Fixed Doomer headshots', Sep 2026) \u2014 no multiplier published"
+        }
+      ],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Tank mini-boss; may detonate on death; rarely drops a Quad Damage Potion (community). Other zones: Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "The Doomer (zombie mini-boss) \u2014 Head: what is the damage multiplier? (slot open)"
+      ]
+    },
+    {
+      "id": "death",
+      "name": "Death!",
+      "status": "official",
+      "enemyClass": null,
+      "where": "Tier 6-7 spawns",
+      "dummyShape": "reaper figure",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Unkillable by design ('He can't be killed but can be avoided', official). Spawns Tier 6-7. No health interaction documented \u2014 no hitbox record applies.",
+      "dataNeeded": [
+        "Death!: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "imps",
+      "name": "Imps (Minion / Warrior / Ranged / Kamikaze)",
+      "status": "not-documented",
+      "enemyClass": "Monster",
+      "where": "Underworld, Sandstorm, Lavaforge",
+      "dummyShape": "small humanoid",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "'Soft bodied' (official); classified as Monsters (official). Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "Imps (Minion / Warrior / Ranged / Kamikaze): what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "spiders",
+      "name": "Spiders (Small / Spider; Kamikaze & Frost variants)",
+      "status": "not-documented",
+      "enemyClass": "Critter",
+      "where": "Underworld",
+      "dummyShape": "spider",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Spawn from breakables; Arachnophobia Mode swaps models. Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "Spiders (Small / Spider; Kamikaze & Frost variants): what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "scorpions",
+      "name": "Scorpions (Small / Scorpion / Scorpion King)",
+      "status": "official",
+      "enemyClass": "Critter",
+      "where": "Sandstorm",
+      "dummyShape": "scorpion",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Hit boxes exist and were officially adjusted (Jan 2025) but no zone breakdown or values published. Classified as Critters (official).",
+      "dataNeeded": [
+        "Scorpions (Small / Scorpion / Scorpion King): what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "wasps",
+      "name": "Wasps (Tiny\u2013Large; Wasp Boss)",
+      "status": "owner-observed-uncertain",
+      "enemyClass": "Critter / boss",
+      "where": "Sandstorm",
+      "dummyShape": "wasp",
+      "hitboxZones": [
+        {
+          "zone": "body",
+          "label": "Single hitbox",
+          "multiplier": 1,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)",
+          "note": "Owner: '1 hitbox x1', nothing further known."
+        }
+      ],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "Wasps (Tiny\u2013Large; Wasp Boss) \u2014 Single hitbox: confirm or replace the owner-observed x1 (uncertain)."
+      ]
+    },
+    {
+      "id": "bat",
+      "name": "Bat (incl. Elite Bat)",
+      "status": "community",
+      "enemyClass": "Critter",
+      "where": "Underworld, Lavaforge",
+      "dummyShape": "bat",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Community (stale Fandom): dies from even the weakest attacks \u2014 effectively minimal HP. Multipliers: Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "Bat (incl. Elite Bat): what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "golem",
+      "name": "Golem (incl. Ice / Magma variants)",
+      "status": "not-documented",
+      "enemyClass": "Monster (boss-event)",
+      "where": "Underworld, Sandstorm, Lavaforge",
+      "dummyShape": "golem",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Boss-event enemy (Golem or Octoculus Boss chamber). Throws its hovering stones. Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "Golem (incl. Ice / Magma variants): what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "octoculus",
+      "name": "Octoculus / Blind Octoculus",
+      "status": "owner-observed-uncertain",
+      "enemyClass": "Monster",
+      "where": "Underworld, Sandstorm, Lavaforge",
+      "dummyShape": "many-eyed creature",
+      "hitboxZones": [
+        {
+          "zone": "eyes",
+          "label": "Eyes \u2014 '1 hitbox x8' (owner's words)",
+          "multiplier": null,
+          "certainty": "owner-observed \u2014 NOT certain (owner, 2026-10-20)",
+          "note": "Owner reports a single hitbox type repeated x8. Research on the Octoculus BOSS found 8 floating eyes as strikable weak points. Dev team: is each eye a separate hitbox, and what is its multiplier? Is the body a zone?"
+        }
+      ],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Owner-observed: '1 hitbox x8', nothing further known. See also Octoculus Boss record.",
+      "alias": "'ghosts' / 'eyeballs' (names the owner has heard for these flying, puffy, octopus-shaped creatures)",
+      "dataNeeded": [
+        "Octoculus / Blind Octoculus \u2014 Eyes \u2014 '1 hitbox x8' (owner's words): what is the damage multiplier? (slot open)"
+      ]
+    },
+    {
+      "id": "octoculus-boss",
+      "name": "Octoculus Boss",
+      "status": "community",
+      "enemyClass": "Monster (boss)",
+      "where": "Boss Event chamber",
+      "dummyShape": "many-eyed boss",
+      "hitboxZones": [
+        {
+          "zone": "eyes",
+          "label": "Floating eyes (x8)",
+          "multiplier": null,
+          "note": "Strikable weak points: destroying the eight floating eyes weakens its defences (community \u2014 detailed wiki text) Owner reports the type as '1 hitbox x8' \u2014 dev team to confirm the eye-hitbox structure and multiplier."
+        }
+      ],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "The clearest weak-point system in the game; the body is defended while eyes remain. No numeric multiplier published. Weakness: Monster Damage perk (community).",
+      "alias": "'ghosts' / 'eyeballs' (owner-heard names for the octopus-shaped flyers)",
+      "dataNeeded": [
+        "Octoculus Boss \u2014 Floating eyes (x8): what is the damage multiplier? (slot open)"
+      ]
+    },
+    {
+      "id": "lost-soul",
+      "name": "Lost Soul",
+      "status": "not-documented",
+      "enemyClass": null,
+      "where": "Lavaforge",
+      "dummyShape": "flaming skull",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Flaming horned skull; detonates on approach. Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "Lost Soul: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "blob",
+      "name": "Blob",
+      "status": "not-documented",
+      "enemyClass": "Critter",
+      "where": "Vilehalls",
+      "dummyShape": "blob",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Leaps onto a player's face, obscuring vision. Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "Blob: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "crystal-guardians",
+      "name": "Crystal Guardians",
+      "status": "community",
+      "enemyClass": null,
+      "where": "Crystal Hunt mode only",
+      "dummyShape": "spectral figure",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "No body-zone system: normally INVULNERABLE; step on blue ground pads/triangles to enter their realm and damage them (community, 3 sources incl. official collider-toggle fixes). Spectral skeletons + mages.",
+      "dataNeeded": [
+        "Crystal Guardians: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "crypt-guardians",
+      "name": "Crypt Guardians (Crypt Guard)",
+      "status": "official",
+      "enemyClass": null,
+      "where": "Tomb Extraction (Crypts)",
+      "dummyShape": "armored guardian",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "New Sep 2026 patrolling enemy: hears voice/magic, alerts others. Skull Dagger breaks on guards; Crypt Hammer does NOT one-hit them. Hitboxes: Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "Crypt Guardians (Crypt Guard): what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "mimic",
+      "name": "Mimic",
+      "status": "not-documented",
+      "enemyClass": null,
+      "where": "All realms",
+      "dummyShape": "chest mimic",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Chest monster. Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "Mimic: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "sewer-tentacles",
+      "name": "Sewer Tentacles",
+      "status": "not-documented",
+      "enemyClass": null,
+      "where": null,
+      "dummyShape": "tentacles",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Water hazard/enemy (Dec 2024). Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "Sewer Tentacles: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "loot-goblin",
+      "name": "Loot Goblin",
+      "status": "official",
+      "enemyClass": "Monster",
+      "where": "Rare spawn",
+      "dummyShape": "goblin",
+      "hitboxZones": [],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Monster class (official); spawn invulnerability (official, Jan 2026). Hitboxes: Hitbox zones and multipliers are NOT publicly documented for this enemy.",
+      "dataNeeded": [
+        "Loot Goblin: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ]
+    },
+    {
+      "id": "generic-humanoid",
+      "name": "Generic Humanoid (placeholder)",
+      "status": "placeholder",
+      "enemyClass": null,
+      "where": null,
+      "dummyShape": "plain humanoid",
+      "hitboxZones": [
+        {
+          "zone": "head",
+          "label": "Head",
+          "multiplier": null
+        },
+        {
+          "zone": "chest",
+          "label": "Chest",
+          "multiplier": null
+        },
+        {
+          "zone": "legs",
+          "label": "Legs",
+          "multiplier": null
+        }
+      ],
+      "layers": {
+        "backgroundImage": null,
+        "mobImage": null,
+        "foregroundImage": null
+      },
+      "notes": "Stand-in so the enemy selector and layered dummy work end-to-end. Multipliers intentionally null \u2014 the UI must show them as unknown, never as 1x.",
+      "dataNeeded": [
+        "Generic Humanoid (placeholder) \u2014 Head: what is the damage multiplier? (slot open)",
+        "Generic Humanoid (placeholder) \u2014 Chest: what is the damage multiplier? (slot open)",
+        "Generic Humanoid (placeholder) \u2014 Legs: what is the damage multiplier? (slot open)"
+      ]
+    }
+  ],
+  "devTeamDataRequests": {
+    "framing": "The recipient dev team already possesses the game's real statistics (owner, 2026-10-20). Our job is placeholders + clear questions. Owner-observed figures in this file are explicitly NOT certain \u2014 treat every one as 'confirm or replace'. A null multiplier means the input slot is open.",
+    "generalQuestions": [
+      "For each enemy: what is the definitive hit zone list? (zones we guessed may not exist; zones we missed may)",
+      "For each zone: what is the exact damage multiplier? (including 0 / no-damage zones and instant-kill zones)",
+      "Can zones be removed or disabled (e.g. zombie arms), and what are the exact mechanics/conditions?",
+      "Does armor reduce damage per zone, and by how much? Do any weapons pierce it?",
+      "How do toughness tiers (Light/Medium/Heavy/Elite/Legendary) scale zone damage or resistance?",
+      "Do multipliers differ by difficulty tier, realm, or co-op player count?"
+    ],
+    "perEnemy": {
+      "megamage": [
+        "Megamage (placeholder name \u2014 actually the Ubermage) \u2014 Head: confirm or replace the owner-observed x3 (uncertain).",
+        "Megamage (placeholder name \u2014 actually the Ubermage) \u2014 Torso: confirm or replace the owner-observed x2 (uncertain).",
+        "Megamage (placeholder name \u2014 actually the Ubermage) \u2014 Legs: confirm or replace the owner-observed x3 (uncertain)."
+      ],
+      "skeleton-mage": [
+        "Skeleton Mage: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "skeleton-minion": [
+        "Skeletons (Minion / Warrior / Archer) \u2014 Head: what is the damage multiplier? (slot open)",
+        "Skeletons (Minion / Warrior / Archer) \u2014 Torso: what is the damage multiplier? (slot open)",
+        "Skeletons (Minion / Warrior / Archer) \u2014 Arms: what is the damage multiplier? (slot open)",
+        "Skeletons (Minion / Warrior / Archer) \u2014 Legs: what is the damage multiplier? (slot open)"
+      ],
+      "skeleton-boss": [
+        "Knight (Skeleton Boss / Skeleton Knight Boss) \u2014 Head (face opening): what is the damage multiplier? (slot open)",
+        "Knight (Skeleton Boss / Skeleton Knight Boss) \u2014 Torso: confirm or replace the owner-observed x0.01 (uncertain).",
+        "Knight (Skeleton Boss / Skeleton Knight Boss) \u2014 Arms: what is the damage multiplier? (slot open)",
+        "Knight (Skeleton Boss / Skeleton Knight Boss) \u2014 Legs: what is the damage multiplier? (slot open)"
+      ],
+      "zombie": [
+        "Zombie \u2014 Head: what is the damage multiplier? (slot open)",
+        "Zombie \u2014 Torso: what is the damage multiplier? (slot open)",
+        "Zombie \u2014 Arms: what is the damage multiplier? (slot open)",
+        "Zombie \u2014 Legs (?): what is the damage multiplier? (slot open)"
+      ],
+      "doomer": [
+        "The Doomer (zombie mini-boss) \u2014 Head: what is the damage multiplier? (slot open)"
+      ],
+      "death": [
+        "Death!: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "imps": [
+        "Imps (Minion / Warrior / Ranged / Kamikaze): what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "spiders": [
+        "Spiders (Small / Spider; Kamikaze & Frost variants): what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "scorpions": [
+        "Scorpions (Small / Scorpion / Scorpion King): what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "wasps": [
+        "Wasps (Tiny\u2013Large; Wasp Boss) \u2014 Single hitbox: confirm or replace the owner-observed x1 (uncertain)."
+      ],
+      "bat": [
+        "Bat (incl. Elite Bat): what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "golem": [
+        "Golem (incl. Ice / Magma variants): what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "octoculus": [
+        "Octoculus / Blind Octoculus \u2014 Eyes \u2014 '1 hitbox x8' (owner's words): what is the damage multiplier? (slot open)"
+      ],
+      "octoculus-boss": [
+        "Octoculus Boss \u2014 Floating eyes (x8): what is the damage multiplier? (slot open)"
+      ],
+      "lost-soul": [
+        "Lost Soul: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "blob": [
+        "Blob: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "crystal-guardians": [
+        "Crystal Guardians: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "crypt-guardians": [
+        "Crypt Guardians (Crypt Guard): what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "mimic": [
+        "Mimic: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "sewer-tentacles": [
+        "Sewer Tentacles: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "loot-goblin": [
+        "Loot Goblin: what are the hit zones and their multipliers? (no zone data at all yet)"
+      ],
+      "generic-humanoid": [
+        "Generic Humanoid (placeholder) \u2014 Head: what is the damage multiplier? (slot open)",
+        "Generic Humanoid (placeholder) \u2014 Chest: what is the damage multiplier? (slot open)",
+        "Generic Humanoid (placeholder) \u2014 Legs: what is the damage multiplier? (slot open)"
+      ]
+    }
+  }
+}
