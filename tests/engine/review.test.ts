@@ -30,13 +30,35 @@ const bare = (): Build => ({
 const flat: Target = { enemyId: 'wasp', zone: { id: 'everywhere', multiplier: 1 } };
 const num = (r: { kind: string; value?: number }) => (r.kind === 'number' ? (r.value as number) : null);
 
+const head: Target = { enemyId: 'test', zone: { id: 'head', multiplier: 1 } };
+const body: Target = { enemyId: 'test', zone: { id: 'torso', multiplier: 1 } };
+
 describe('review: ring factors actually apply', () => {
-  it('entered Sundering + Scout values multiply the floor', () => {
+  it('entered Sundering + Scout values multiply the floor (Scout on HEAD)', () => {
     const b = bare();
     b.rings[0] = { name: 'Sundering / Armor Penetration', userValue: 0.5 };
     expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(150, 6);
     b.rings[1] = { name: "Scout's Signet / Precision Shot", userValue: 0.25 };
-    expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(187.5, 6);
+    expect(num(evaluateHit(b, head).floor)).toBeCloseTo(187.5, 6);
+  });
+
+  it('owner formula: Scout\'s Signet applies on HEAD hits only', () => {
+    const b = bare();
+    b.rings[0] = { name: "Scout's Signet / Precision Shot", userValue: 0.25 };
+    expect(num(evaluateHit(b, head).floor)).toBeCloseTo(125, 6);
+    expect(num(evaluateHit(b, body).floor)).toBeCloseTo(100, 6);
+    expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(100, 6); // 'everywhere' opens neither gate
+  });
+
+  it('owner formula: Backstab applies on BODY hits only', () => {
+    const b = bare();
+    b.rings[0] = { name: 'Shadow Strike / Backstab', userValue: 0.5 };
+    expect(num(evaluateHit(b, body).floor)).toBeCloseTo(150, 6);
+    expect(num(evaluateHit(b, head).floor)).toBeCloseTo(100, 6);
+    // Unentered Backstab blocks only where its gate is open.
+    b.rings[0] = { name: 'Shadow Strike / Backstab', userValue: null };
+    expect(evaluateHit(b, head).floor.kind).toBe('number');
+    expect(evaluateHit(b, body).floor.kind).toBe('unknown');
   });
 
   it('two identical rings add inside one factor', () => {
@@ -47,20 +69,30 @@ describe('review: ring factors actually apply', () => {
     expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(150, 6);
   });
 
-  it('conditional ring applies only while its situation holds', () => {
+  it('owner formula: handling x2 is weapon-gated (axe/hammer/spear/greatsword, 2H)', () => {
     const b = bare();
-    b.rings[0] = { name: 'Venom Fang / Toxic Amplifier', userValue: 0.5 };
+    b.grip = '2H';
+    b.weaponType = 'axe';
+    expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(200, 6);
+    b.weaponType = 'sword';
     expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(100, 6);
-    b.situations.targetPoisoned = true;
-    expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(150, 6);
+    b.weaponType = 'greatsword';
+    expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(200, 6);
+    b.grip = '1H';
+    expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(100, 6);
+    b.grip = '2H';
+    b.weaponType = undefined;
+    expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(100, 6);
   });
 
-  it('unentered conditional ring blocks only when its situation holds', () => {
+  it('set-aside annex factors are NOT applied (Might, first-strike)', () => {
     const b = bare();
-    b.rings[0] = { name: 'Venom Fang / Toxic Amplifier', userValue: null };
-    expect(evaluateHit(b, flat).floor.kind).toBe('number');
-    b.situations.targetPoisoned = true;
-    expect(evaluateHit(b, flat).floor.kind).toBe('unknown');
+    b.attackType = 'throw';
+    b.exo.might = true;
+    expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(100, 6);
+    b.situations.firstStrike = true;
+    expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(100, 6);
+    expect(evaluateHit(b, flat).firstStrikeApplied).toBe(false);
   });
 
   it('Predator adds inside the crit factor', () => {
@@ -71,14 +103,6 @@ describe('review: ring factors actually apply', () => {
     const withPred = num(evaluateHit(b, flat).ceiling);
     expect(noPred).toBeCloseTo(300, 6);
     expect(withPred).toBeCloseTo(350, 6);
-  });
-
-  it('Throw Damage perk applies on throws only', () => {
-    const b = bare();
-    b.weaponPerks = ['Throw Damage'];
-    expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(100, 6);
-    b.attackType = 'throw';
-    expect(num(evaluateHit(b, flat).floor)).toBeCloseTo(135, 6);
   });
 
   it('ranged builds cap at two proc pools', () => {
@@ -99,6 +123,7 @@ describe('review: worked-example anchor (testers’ published table)', () => {
   const anchor = (): Build => ({
     baseDamage: 130,
     grip: '2H',
+    weaponType: 'axe',
     attackType: 'swing',
     weaponPerks: ['Attack Power', 'Criticals', 'Explosions'],
     element: 'Fire',

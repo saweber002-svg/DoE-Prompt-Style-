@@ -1,6 +1,16 @@
 # 02 — The damage model
 
-Canonical source: `reference/research/full-report-2026-10-21.md` §5. Machine-readable twin: `data/damage-model.json`.
+Canonical source: **the owner's calculator formula** (`reference/owner-calculator-formula.md`, Scott 2026-10-22 — owner-confirmed, supersedes community research as calculator input). Machine-readable twin: `data/damage-model.json`. The research report (`reference/research/full-report-2026-10-21.md` §5) remains the provenance record and the set-aside annex source.
+
+## Owner-formula amendment (2026-10-22)
+
+The canonical chain below is the research-era chain with the owner's semantics applied:
+
+- **Scout's Signet applies on HEAD-zone hits only** (zone class HEAD: `head`, `face`). On any other zone its factor is 1 and an unentered value does not block results.
+- **Backstab applies on BODY-zone hits only** (any zone that is not HEAD class and not the flat `everywhere` class). It is gated by zone, not by attacker position. Zone-gating makes Backstab and Scout's mutually exclusive per hit by construction — there is no conflict state.
+- **Handling ×2 requires two hands AND a weapon type of axe, hammer, spear, or greatsword.** Weapon type is a build input (`Build.weaponType`); unspecified type earns no handling factor.
+- **Set aside (in `data/damage-model.json` → `setAside`; recorded, never applied):** Might, Pierce, Venom Fang, Breaker's Band, Throw Damage perk, first-strike. These came from community research and are not part of the owner's calculator.
+- Zone values in `data/enemies.json` are **interim** (from the superseded survey) pending transcription of the owner's T_WEAK table; the owner's lookup defaults an unlisted enemy×zone combination to 0.
 
 ## The factor chain
 

@@ -18,13 +18,6 @@ export function attackPowerFactor(build: Build): number {
   return 1 + PCT_BY_TIER[build.tier - 1];
 }
 
-export function throwDamageFactor(build: Build): number {
-  // Throw Damage perk: throws only (docs/03).
-  if (!build.weaponPerks.includes('Throw Damage')) return 1;
-  if (build.attackType !== 'throw') return 1;
-  return 1 + PCT_BY_TIER[build.tier - 1];
-}
-
 export function stabFactor(build: Build): number {
   if (!build.weaponPerks.includes('Stab Damage')) return 1;
   if (build.attackType !== 'thrust') return 1;
@@ -35,19 +28,22 @@ export function powerPullbackFactor(build: Build): number {
   return build.exo.powerPullback ? 1 + POWER_PULLBACK : 1;
 }
 
+const HANDLING_WEAPONS = ['axe', 'hammer', 'spear', 'greatsword'];
+
 export function handlingFactor(build: Build): number {
-  // Grip: two hands = ×2 (owner-confirmed 2:1; docs/02).
-  // The dagger ×1.5 is the Stab Damage flat bonus, handled in stabFactor —
-  // it is not a separate handling multiplier.
-  return build.grip === '2H' ? 2 : 1;
+  // Owner formula (canonical): two-hand handling ×2 ONLY for
+  // axe / hammer / spear / greatsword. Any other type, one hand, or an
+  // unspecified weapon type earns no handling factor.
+  if (build.grip !== '2H') return 1;
+  return HANDLING_WEAPONS.includes(build.weaponType ?? '') ? 2 : 1;
 }
 
-export function mightFactor(build: Build): number {
-  return build.exo.might && build.attackType === 'throw' ? 2 : 1;
-}
-
-export function pierceFactor(build: Build): number {
-  return build.exo.pierce && build.attackType === 'thrust' ? 2 : 1;
+/** Zone class from a zone id (owner formula gates rings by HEAD / BODY). */
+export function zoneClassOf(zoneId: string | null | undefined): 'head' | 'body' | 'everywhere' {
+  const id = (zoneId ?? '').toLowerCase();
+  if (id === 'head' || id === 'face') return 'head';
+  if (id === 'everywhere') return 'everywhere';
+  return 'body';
 }
 
 /**

@@ -1,7 +1,7 @@
 import type { Build, Target, HitOutcome, ResultState, FactorBreakdown, Pattern } from './types';
 import {
-  attackPowerFactor, throwDamageFactor, stabFactor, powerPullbackFactor, handlingFactor,
-  mightFactor, pierceFactor, ringFactor, ringSum, conditionalRingFactor, zoneFactor,
+  attackPowerFactor, stabFactor, powerPullbackFactor, handlingFactor,
+  ringFactor, ringSum, conditionalRingFactor, zoneFactor, zoneClassOf,
   CRIT_MULT, EXO_CRIT_MULT_BASE, FIRE_MULT_BASE, EXPLOSION_MULT_BASE
 } from './factors';
 import { getPools, enumeratePatterns } from './probability';
@@ -9,39 +9,32 @@ import { getPools, enumeratePatterns } from './probability';
 const SUNDERING = 'Sundering / Armor Penetration';
 const SCOUTS = "Scout's Signet / Precision Shot";
 const PREDATOR = 'Predator / Critical Strike';
-const VENOM = 'Venom Fang / Toxic Amplifier';
-const BREAKERS = "Breaker's Band / Stagger Mastery";
 const BACKSTAB = 'Shadow Strike / Backstab';
 
+/**
+ * Canonical damage evaluation — implements the owner's calculator formula
+ * (reference/owner-calculator-formula.md, Scott 2026-10-22, owner-confirmed).
+ * Research-sourced factors that are not in the owner's calculator
+ * (Might, Pierce, Venom Fang, Breaker's Band, Throw Damage, first-strike)
+ * are set aside in the data annex and are NOT applied here.
+ */
 export function evaluateHit(build: Build, target: Target): HitOutcome {
-  // Conflict: Backstab + Scout's never stack (the only documented non-stack).
-  const hasBackstab = build.rings.some(r => r.name?.includes('Shadow Strike') || r.name?.includes('Backstab'));
-  const hasScouts = build.rings.some(r => r.name?.includes("Scout's") || r.name?.includes('Precision Shot'));
-  if (hasBackstab && hasScouts) {
-    const conflict: ResultState = { kind: 'conflict', reason: "Backstab and Scout's Signet do not stack" };
-    return {
-      floor: conflict, expected: conflict, ceiling: conflict,
-      ceilingFrequency: null, patterns: [], breakdown: [], firstStrikeApplied: false
-    };
-  }
-
   const zoneF = zoneFactor(target.zone?.multiplier ?? null);
+  const zoneClass = target.zone?.zoneClass ?? zoneClassOf(target.zone?.id);
 
-  // Always-on and conditional factors (docs/02 factor chain).
+  // Always-on factors (owner formula chain).
   const ap = attackPowerFactor(build);
-  const throwDmg = throwDamageFactor(build);
   const stab = stabFactor(build);
   const pp = powerPullbackFactor(build);
   const handling = handlingFactor(build);
-  const might = mightFactor(build);
-  const pierce = pierceFactor(build);
 
   const sundering = ringFactor(build.rings, SUNDERING);   // (1 + x + y) | null
-  const scouts = ringFactor(build.rings, SCOUTS);         // (1 + x + y) | null
+  // Owner formula zone gates: headshot ring applies on HEAD hits only;
+  // Backstab applies on BODY hits only. Zone-gating makes the two
+  // mutually exclusive per hit by construction (no conflict state).
+  const scouts = conditionalRingFactor(build.rings, SCOUTS, zoneClass === 'head');
+  const backstab = conditionalRingFactor(build.rings, BACKSTAB, zoneClass === 'body');
   const predatorSum = ringSum(build.rings, PREDATOR);     // raw sum for crit factors | null
-  const venom = conditionalRingFactor(build.rings, VENOM, build.situations.targetPoisoned);
-  const breakers = conditionalRingFactor(build.rings, BREAKERS, build.situations.targetStaggered);
-  const backstab = conditionalRingFactor(build.rings, BACKSTAB, build.situations.fromBehind);
 
   // Effective proc pools (ranged cap applied inside getPools).
   const pools = getPools(
@@ -60,12 +53,12 @@ export function evaluateHit(build: Build, target: Target): HitOutcome {
   // Predator's unknown value matters only when a crit factor exists.
   const predatorUnknown = predatorSum === null && (hasWCrit || hasECrit);
   const hasUnknown =
-    sundering === null || scouts === null || predatorUnknown ||
-    venom.unknown || breakers.unknown || backstab.unknown || zoneF === null;
+    sundering === null || scouts.unknown || backstab.unknown ||
+    predatorUnknown || zoneF === null;
 
   const knownBase =
-    build.baseDamage * ap * throwDmg * stab * pp * handling * might * pierce *
-    (sundering ?? 1) * (scouts ?? 1) * venom.factor * breakers.factor * backstab.factor *
+    build.baseDamage * ap * stab * pp * handling *
+    (sundering ?? 1) * scouts.factor * backstab.factor *
     (zoneF ?? 1);
   const known = hasUnknown ? null : knownBase;
 
@@ -101,31 +94,27 @@ export function evaluateHit(build: Build, target: Target): HitOutcome {
   if (hasFire) ceilingMult *= FIRE_MULT_BASE;
   if (hasExpl) ceilingMult *= EXPLOSION_MULT_BASE;
 
-  let floor: ResultState = asResult(known);
-  let expected: ResultState = asResult(known === null ? null : expectedDamage);
-  let ceiling: ResultState = asResult(known === null ? null : known * ceilingMult);
+  const floor: ResultState = asResult(known);
+  const expected: ResultState = asResult(known === null ? null : expectedDamage);
+  const ceiling: ResultState = asResult(known === null ? null : known * ceilingMult);
 
   const ceilingFrequency = patterns.find(p => p.procced.every(Boolean))?.probability ?? null;
 
-  // First strike (×3 vs unaware) applies outside the chain (docs/02).
-  if (build.situations.firstStrike) {
-    if (floor.kind === 'number') floor = { kind: 'number', value: floor.value * 3 };
-    if (expected.kind === 'number') expected = { kind: 'number', value: expected.value * 3 };
-    if (ceiling.kind === 'number') ceiling = { kind: 'number', value: ceiling.value * 3 };
-  }
-
+  const scoutsEquipped = build.rings.some(r => r.name === SCOUTS);
+  const backstabEquipped = build.rings.some(r => r.name === BACKSTAB);
   const breakdown: FactorBreakdown[] = [
     { name: 'Attack Power', multiplier: ap, active: ap > 1 },
-    { name: 'Throw Damage', multiplier: throwDmg, active: throwDmg > 1 },
     { name: 'Stab', multiplier: stab, active: stab > 1 },
     { name: 'Power/Pullback', multiplier: pp, active: pp > 1 },
     { name: 'Sundering', multiplier: sundering, active: sundering !== null && sundering > 1 },
-    { name: "Scout's Signet", multiplier: scouts, active: scouts !== null && scouts > 1 },
-    { name: 'Venom Fang', multiplier: venom.unknown ? null : venom.factor, active: venom.factor > 1 },
-    { name: "Breaker's Band", multiplier: breakers.unknown ? null : breakers.factor, active: breakers.factor > 1 },
-    { name: 'Backstab', multiplier: backstab.unknown ? null : backstab.factor, active: backstab.factor > 1 },
-    { name: 'Might', multiplier: might, active: might > 1 },
-    { name: 'Pierce', multiplier: pierce, active: pierce > 1 },
+    {
+      name: "Scout's Signet", multiplier: scouts.unknown ? null : scouts.factor, active: scouts.factor > 1,
+      note: scoutsEquipped && zoneClass !== 'head' ? 'applies on HEAD hits only (owner formula)' : undefined,
+    },
+    {
+      name: 'Backstab', multiplier: backstab.unknown ? null : backstab.factor, active: backstab.factor > 1,
+      note: backstabEquipped && zoneClass !== 'body' ? 'applies on BODY hits only (owner formula)' : undefined,
+    },
     { name: 'Handling', multiplier: handling, active: handling !== 1 },
     { name: 'Zone', multiplier: zoneF, active: zoneF !== null && zoneF !== 1 },
   ];
@@ -137,6 +126,8 @@ export function evaluateHit(build: Build, target: Target): HitOutcome {
     ceilingFrequency,
     patterns,
     breakdown,
-    firstStrikeApplied: build.situations.firstStrike
+    // First-strike is set aside (research annex) — not applied by the
+    // canonical engine.
+    firstStrikeApplied: false
   };
 }
