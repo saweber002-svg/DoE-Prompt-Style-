@@ -1,0 +1,53 @@
+{
+  "comment": "Mirror of src/config.mjs for non-JS ports (Unity/C#, Unreal, spreadsheets). Bonus values are EXAMPLE placeholders \u2014 verify against the current Dungeons of Eternity build before shipping.",
+  "defaultBaseDamage": 100,
+  "enemies": [
+    {
+      "hitboxes": [
+        {
+          "id": "head",
+          "multiplier": 3,
+          "name": "Head"
+        },
+        {
+          "id": "chest",
+          "multiplier": 2,
+          "name": "Chest"
+        },
+        {
+          "id": "legs",
+          "multiplier": 3,
+          "name": "Legs"
+        }
+      ],
+      "id": "megamage",
+      "name": "Megamage (placeholder \u2014 actually the Ubermage; owner-observed figures, not certain)"
+    }
+  ],
+  "perks": [
+    {
+      "bonus": 0.25,
+      "id": "perk-col-1",
+      "name": "Perk \u2014 Column 1",
+      "procChance": 0.4
+    },
+    {
+      "bonus": 0.25,
+      "id": "perk-col-2",
+      "name": "Perk \u2014 Column 2",
+      "procChance": 0.32
+    },
+    {
+      "bonus": 0.25,
+      "id": "perk-col-3",
+      "name": "Perk \u2014 Column 3",
+      "procChance": 0.32
+    },
+    {
+      "bonus": 0.25,
+      "id": "perk-col-4",
+      "name": "Perk \u2014 Column 4",
+      "procChance": 0.32
+    }
+  ]
+}
