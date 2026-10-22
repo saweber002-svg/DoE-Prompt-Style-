@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { loadAll } from '../data/loader';
-import { ZoneFigure } from './Signature';
+import { ZoneFigure, UnknownField } from './Signature';
 
 const { enemies: enemiesData } = loadAll();
 const roster = enemiesData.enemies.filter((e: any) => e.roster);
@@ -25,11 +25,14 @@ export function EnemySelect() {
       </div>
       {enemy && (
         <div className="panel p-4 flex flex-col lg:flex-row gap-6 items-start">
-          <ZoneFigure name={enemy.name} image={enemy.image} confidence={enemy.confidence} zones={enemy.zones} />
+          <ZoneFigure name={enemy.name} image={enemy.image} confidence={enemy.confidence} zones={enemy.zones ?? undefined} />
           <div className="flex-1 w-full">
             <div className="display text-lg mb-2">Zone Data</div>
             <div className="space-y-1 text-sm">
-              {enemy.zones.map((z: any) => (
+              {!enemy.zones && (
+                <div className="py-2"><UnknownField reason="No zone data — not measured" /></div>
+              )}
+              {(enemy.zones ?? []).map((z: any) => (
                 <div key={z.zone} className="flex justify-between border-b border-amber-900/30 py-1.5">
                   <span className="capitalize">{z.zone}</span>
                   <span>

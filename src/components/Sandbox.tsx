@@ -49,6 +49,11 @@ export function Sandbox() {
         <label className="block text-xs text-amber-200/70">Base Damage
           <input type="number" value={build.baseDamage} onChange={e => setBuild({ ...build, baseDamage: Number(e.target.value) || 0 })} className="w-full mt-1 bg-black/40 border border-amber-800/50 rounded px-3 py-2 text-amber-100" />
         </label>
+        <label className="block text-xs text-amber-200/70">Target
+          <select value={enemyId} onChange={e => { setEnemyId(e.target.value); setZoneIdx(0); }} className="w-full mt-1 bg-black/40 border border-amber-800/50 rounded px-3 py-2 text-amber-100">
+            {roster.map((e: any) => <option key={e.id} value={e.id}>{e.name}</option>)}
+          </select>
+        </label>
         <label className="block text-xs text-amber-200/70">Grip
           <select value={build.grip} onChange={e => setBuild({ ...build, grip: e.target.value as any })} className="w-full mt-1 bg-black/40 border border-amber-800/50 rounded px-3 py-2 text-amber-100">
             <option value="1H">1H</option>
