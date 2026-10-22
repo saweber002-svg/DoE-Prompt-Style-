@@ -1,4 +1,5 @@
 import type { FactorBreakdown, ResultState, Pattern } from '../engine/types';
+import { motion, useReducedMotion } from 'motion/react';
 
 export function UnknownField({ reason, className = '' }: { reason?: string; className?: string }) {
   return (
@@ -55,11 +56,15 @@ export function ThreeNumbers({
 }
 
 export function FactorChain({ breakdown }: { breakdown: FactorBreakdown[] }) {
+  const reduce = useReducedMotion();
   return (
     <div className="flex flex-wrap gap-1.5 mt-3">
       {breakdown.map((f) => (
-        <span
+        <motion.span
           key={f.name}
+          initial={reduce ? false : { opacity: 0.6, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: reduce ? 0 : 0.16 }}
           className={`px-2 py-1 rounded text-xs border transition-all duration-150 ${
             f.active
               ? 'border-amber-500/70 bg-amber-950/50 text-amber-100'
@@ -72,7 +77,7 @@ export function FactorChain({ breakdown }: { breakdown: FactorBreakdown[] }) {
             <span className="ml-1 text-gold">×{f.multiplier}</span>
           )}
           {f.multiplier == null && <span className="ml-1">?</span>}
-        </span>
+        </motion.span>
       ))}
     </div>
   );
