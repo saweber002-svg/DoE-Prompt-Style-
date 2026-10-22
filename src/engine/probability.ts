@@ -11,8 +11,12 @@ export function getPools(isRanged: boolean, hasFire: boolean, hasExplosions: boo
   if (hasExoCrit) pools.push({ id: 'exoCriticals', rate: PROC_RATES.exoCriticals });
   if (hasFire) pools.push({ id: 'elementFire', rate: PROC_RATES.elementFire });
   if (hasExplosions) pools.push({ id: 'explosionsOrArea', rate: PROC_RATES.explosionsOrArea });
-  if (isRanged) {
-    // cap at 2 proc perks — but enumeration still lists; caller filters
+  if (isRanged && pools.length > 2) {
+    // Ranged cap (docs/02): at most two proc perks can be active on one shot.
+    // Pools are taken in the canonical order above. Which two survive when a
+    // build carries more is not documented — this ordering is the engine's
+    // stated interpretation, flagged in the PR for the owner's confirmation.
+    return pools.slice(0, 2);
   }
   return pools;
 }
