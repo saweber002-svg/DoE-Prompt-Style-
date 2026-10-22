@@ -1,3 +1,57 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Approach B: Torchlit Cinematic — tokens & base surfaces */
+:root {
+  --bg-stone: #0c0a08;
+  --surface-glass: rgba(12, 14, 16, 0.72);
+  --gold: #e8c170;
+  --gold-edge: #c9a227;
+  --amber: #f0a050;
+  --teal: #2dd4bf;
+  --ink: #f5efe6;
+  --ink-muted: #a89b88;
+  --panel-border: rgba(201, 162, 39, 0.45);
+}
+
+body {
+  margin: 0;
+  background: var(--bg-stone);
+  color: var(--ink);
+  font-family: Inter, system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* Full-bleed torchlit backdrop placeholder — procedural layers added later */
+.app-root {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 20% 40%, rgba(240, 160, 80, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 60%, rgba(45, 212, 191, 0.10) 0%, transparent 55%),
+    linear-gradient(180deg, #141210 0%, #0c0a08 100%);
+  color: var(--ink);
+}
+
+/* Frosted dark-glass panel */
+.panel {
+  background: var(--surface-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 220, 150, 0.08);
+}
+
+/* Gold serif display */
+.display {
+  font-family: Cinzel, serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--gold);
+}
+
+.title-lockup {
+  font-family: "Cinzel Decorative", Cinzel, serif;
+  font-weight: 700;
+  color: var(--gold);
+}
