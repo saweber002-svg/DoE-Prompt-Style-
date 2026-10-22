@@ -29,7 +29,9 @@ export interface Ring {
   name: string;
   factorNote: string;
   note?: string;
-  value: null;
+  value: number | null;
+  provenance?: 'owner-measured';
+  source?: string;
 }
 
 export interface DamageModel {
@@ -99,6 +101,7 @@ export interface DamageModel {
 export interface Zone {
   multiplier: number;
   zone: string;
+  zoneClass: 'head' | 'body' | 'everywhere';
   note?: string;
 }
 
@@ -145,7 +148,19 @@ function validateDamageModel(raw: unknown): DamageModel {
   assert(rings !== undefined && Array.isArray(rings.list), 'rings.list missing');
   for (const r of rings.list as unknown[]) {
     const ring = r as Record<string, unknown>;
-    assert(ring.value === null, `Ring "${ring.name}" value must be null (user-entered), got ${ring.value}`);
+    const val = ring.value;
+    if (val === null || val === undefined) {
+      // null is the default unmeasured state — OK
+      continue;
+    }
+    if (typeof val === 'number') {
+      assert(ring.provenance === 'owner-measured',
+        `Ring "${ring.name}" has numeric value but missing provenance: "owner-measured"`);
+      assert(typeof ring.source === 'string' && ring.source.length > 0,
+        `Ring "${ring.name}" has owner-measured value but missing source note`);
+    } else {
+      fail(`Ring "${ring.name}" value must be number or null, got ${typeof val}`);
+    }
   }
 
   return raw as DamageModel;
@@ -169,6 +184,8 @@ function validateEnemies(raw: unknown): EnemiesData {
       for (const z of enemy.zones as unknown[]) {
         const zone = z as Record<string, unknown>;
         assert(typeof zone.multiplier === 'number', `zone multiplier must be number (0 allowed for nullify)`);
+        assert(typeof zone.zoneClass === 'string' && ['head','body','everywhere'].includes(zone.zoneClass as string),
+          `zone ${zone.zone} on ${enemy.id} missing or invalid zoneClass`);
         // 0 is measured nullify — preserve, do not treat as missing
       }
     }

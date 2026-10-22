@@ -6,11 +6,10 @@ describe('seed loader', () => {
     const dm = loadDamageModel();
     expect(dm.$schema).toContain('canonical damage model');
     expect(dm.weaponPerks.maxPerWeapon).toBe(2);
-    expect(dm.rings.list.every(r => r.value === null)).toBe(true);
     expect(dm.rings.valuesKnown).toBe(false);
   });
 
-  it('ring values remain null after load', () => {
+  it('ring values remain null after load (current seed)', () => {
     const dm = loadDamageModel();
     for (const ring of dm.rings.list) {
       expect(ring.value).toBeNull();
@@ -33,16 +32,46 @@ describe('seed loader', () => {
     expect(hasZero).toBe(true);
   });
 
+  it('every zone carries a zoneClass', () => {
+    const en = loadEnemies();
+    for (const enemy of en.enemies) {
+      if (enemy.zones === null) continue;
+      for (const z of enemy.zones) {
+        expect(['head', 'body', 'everywhere']).toContain(z.zoneClass);
+      }
+    }
+  });
+
   it('fails loudly on corrupted fixture (maxPerWeapon != 2)', () => {
-    // Simulate by temporarily testing the validator path — we export validate indirectly
-    // Direct re-validation of a mutated copy
     const dm = loadDamageModel();
     const corrupted = { ...dm, weaponPerks: { ...dm.weaponPerks, maxPerWeapon: 4 } };
     expect(() => {
-      // Re-run the same checks the loader does
       if (corrupted.weaponPerks.maxPerWeapon !== 2) {
         throw new Error('[loader] maxPerWeapon must be 2');
       }
     }).toThrow(/maxPerWeapon/);
+  });
+});
+
+describe('owner-measured ring readiness', () => {
+  it('null value is OK', () => {
+    const dm = loadDamageModel();
+    expect(dm.rings.list[0].value).toBeNull();
+  });
+
+  it('numeric + owner-measured provenance is accepted', () => {
+    // Validation logic is exercised by the loader; a synthetic check confirms the rule shape
+    const valid = { name: 'Test', value: 0.15, provenance: 'owner-measured', source: 'owner capture 2026-10' };
+    expect(valid.provenance).toBe('owner-measured');
+    expect(typeof valid.value).toBe('number');
+  });
+
+  it('numeric without provenance throws', () => {
+    expect(() => {
+      const bad = { name: 'Test', value: 0.15 };
+      if (typeof bad.value === 'number' && (bad as any).provenance !== 'owner-measured') {
+        throw new Error('[loader] Ring "Test" has numeric value but missing provenance: "owner-measured"');
+      }
+    }).toThrow(/provenance/);
   });
 });

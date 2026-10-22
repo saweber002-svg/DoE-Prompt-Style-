@@ -1,5 +1,7 @@
 # 01 — Product scope
 
+**Status:** Calculator and guide foundation are live in main. Ring values remain user-entered until owner-measured drops land.
+
 ## What Damage of Eternity is
 
 A complete damage-system guide + calculator companion for *Dungeons of Eternity*. It models **every variable that changes the damage number, and nothing else**:

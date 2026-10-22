@@ -1,6 +1,8 @@
 # BLUEPRINT — Damage of Eternity codebase
 
-How the app will be structured when building starts. This document is the contract: slices are cut from it, in the order given, and verified against it. Product/data/design detail lives in `docs/`; this file is the engineering map.
+**Status (2026-10-22):** Slices 1–4 built and merged. Owner formula is canonical. Active work: UI completion (parallel) and codebase foundation (CI, Pages, owner-data readiness).
+
+How the app is structured. Slices 1–4 (scaffold, engine, owner-formula alignment, premium UI v1) are merged to main. This document remains the contract for remaining work (UI completion + codebase foundation). Product/data/design detail lives in `docs/`; this file is the engineering map.
 
 ## 1. Product in one paragraph
 
@@ -60,7 +62,7 @@ tests/
 - **User values are data too:** a ring value the user types in is stored with provenance `user-entered` and is visually distinct from verified values everywhere it appears.
 - **Names are canon:** enemy/perk/ring names come from `data/` only (see `docs/08`); UI copy never invents a name.
 
-## 5. Build order (slices, when building is authorized)
+## 5. Build order (slices 1–4 merged; remaining work below)
 
 1. **Scaffold + theme tokens + seed loader** (data integrity tests green).
 2. **Engine: formula + probability** with worked-example tests.
