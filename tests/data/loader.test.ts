@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { loadDamageModel, loadEnemies } from '../../src/data/loader';
+import { loadDamageModel, loadEnemies, validateDamageModel, validateEnemies } from '../../src/data/loader';
 
 describe('seed loader', () => {
   it('loads damage model with schema integrity', () => {
@@ -45,33 +45,52 @@ describe('seed loader', () => {
   it('fails loudly on corrupted fixture (maxPerWeapon != 2)', () => {
     const dm = loadDamageModel();
     const corrupted = { ...dm, weaponPerks: { ...dm.weaponPerks, maxPerWeapon: 4 } };
-    expect(() => {
-      if (corrupted.weaponPerks.maxPerWeapon !== 2) {
-        throw new Error('[loader] maxPerWeapon must be 2');
-      }
-    }).toThrow(/maxPerWeapon/);
+    expect(() => validateDamageModel(corrupted)).toThrow(/maxPerWeapon/);
   });
 });
 
-describe('owner-measured ring readiness', () => {
-  it('null value is OK', () => {
+describe('owner-measured ring provenance (real validator)', () => {
+  const baseModel = () => {
     const dm = loadDamageModel();
-    expect(dm.rings.list[0].value).toBeNull();
+    return JSON.parse(JSON.stringify(dm)); // deep clone for mutation
+  };
+
+  it('(a) all-null ring values pass', () => {
+    const dm = baseModel();
+    expect(() => validateDamageModel(dm)).not.toThrow();
   });
 
-  it('numeric + owner-measured provenance is accepted', () => {
-    // Validation logic is exercised by the loader; a synthetic check confirms the rule shape
-    const valid = { name: 'Test', value: 0.15, provenance: 'owner-measured', source: 'owner capture 2026-10' };
-    expect(valid.provenance).toBe('owner-measured');
-    expect(typeof valid.value).toBe('number');
+  it('(b) numeric + provenance owner-measured + non-empty source passes', () => {
+    const dm = baseModel();
+    dm.rings.list[0].value = 0.15;
+    dm.rings.list[0].provenance = 'owner-measured';
+    dm.rings.list[0].source = 'owner in-game capture 2026-10-22';
+    expect(() => validateDamageModel(dm)).not.toThrow();
   });
 
-  it('numeric without provenance throws', () => {
-    expect(() => {
-      const bad = { name: 'Test', value: 0.15 };
-      if (typeof bad.value === 'number' && (bad as any).provenance !== 'owner-measured') {
-        throw new Error('[loader] Ring "Test" has numeric value but missing provenance: "owner-measured"');
-      }
-    }).toThrow(/provenance/);
+  it('(c) numeric without provenance throws', () => {
+    const dm = baseModel();
+    dm.rings.list[0].value = 0.15;
+    expect(() => validateDamageModel(dm)).toThrow(/provenance/);
+  });
+
+  it('(d) numeric with provenance but empty/missing source throws', () => {
+    const dm = baseModel();
+    dm.rings.list[0].value = 0.15;
+    dm.rings.list[0].provenance = 'owner-measured';
+    dm.rings.list[0].source = '';
+    expect(() => validateDamageModel(dm)).toThrow(/source/);
+
+    const dm2 = baseModel();
+    dm2.rings.list[0].value = 0.15;
+    dm2.rings.list[0].provenance = 'owner-measured';
+    delete dm2.rings.list[0].source;
+    expect(() => validateDamageModel(dm2)).toThrow(/source/);
+  });
+
+  it('(e) non-numeric, non-null value throws', () => {
+    const dm = baseModel();
+    (dm.rings.list[0] as any).value = '0.15';
+    expect(() => validateDamageModel(dm)).toThrow(/number or null/);
   });
 });

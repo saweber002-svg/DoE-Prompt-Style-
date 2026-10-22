@@ -1,6 +1,6 @@
 # BLUEPRINT — Damage of Eternity codebase
 
-**Status (2026-10-22):** Slices 1–4 built and merged. Owner formula is canonical. Active work: UI completion (parallel) and codebase foundation (CI, Pages, owner-data readiness).
+**Status (2026-10-22):** Foundation (PR #4) + UI Stage 1 (PR #5) merged to main. Owner formula is canonical. Pages pending the owner’s two manual actions (add the two workflow files to main; Settings → Pages → Source: GitHub Actions). Active work: UI completion II + codebase hardening.
 
 How the app is structured. Slices 1–4 (scaffold, engine, owner-formula alignment, premium UI v1) are merged to main. This document remains the contract for remaining work (UI completion + codebase foundation). Product/data/design detail lives in `docs/`; this file is the engineering map.
 

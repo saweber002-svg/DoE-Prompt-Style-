@@ -132,7 +132,7 @@ function assert(condition: boolean, msg: string): asserts condition {
   if (!condition) fail(msg);
 }
 
-function validateDamageModel(raw: unknown): DamageModel {
+export function validateDamageModel(raw: unknown): DamageModel {
   assert(typeof raw === 'object' && raw !== null, 'damage-model must be object');
   const d = raw as Record<string, unknown>;
   assert(typeof d.$schema === 'string', '$schema missing');
@@ -166,7 +166,7 @@ function validateDamageModel(raw: unknown): DamageModel {
   return raw as DamageModel;
 }
 
-function validateEnemies(raw: unknown): EnemiesData {
+export function validateEnemies(raw: unknown): EnemiesData {
   assert(typeof raw === 'object' && raw !== null, 'enemies must be object');
   const e = raw as Record<string, unknown>;
   assert(Array.isArray(e.enemies), 'enemies array missing');
