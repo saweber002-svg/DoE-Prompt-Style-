@@ -19,7 +19,20 @@ export function ConfidenceBadge({ confidence }: { confidence: string }) {
 }
 
 function NumberOrUnknown({ r, className = '' }: { r: ResultState; className?: string }) {
-  if (r.kind === 'number') return <span className={className}>{r.value.toLocaleString()}</span>;
+  const reduce = useReducedMotion();
+  if (r.kind === 'number') {
+    return (
+      <motion.span
+        key={r.value}
+        initial={reduce ? false : { opacity: 0.5, y: 2 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: reduce ? 0 : 0.16 }}
+        className={className}
+      >
+        {r.value.toLocaleString()}
+      </motion.span>
+    );
+  }
   return <UnknownField reason={r.reason} className={className} />;
 }
 

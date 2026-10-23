@@ -3,7 +3,8 @@ import { Sigil } from './Sigil';
 import { UnknownField } from './Signature';
 
 const { damageModel } = loadAll();
-const SET_ASIDE = new Set(['Might', 'Pierce']);
+// setAside factor names carry suffixes ("Might (EXO)"); strip them so they match perk names.
+const SET_ASIDE = new Set(((damageModel as any).setAside?.factors ?? []).map((f: any) => String(f.name).split(' (')[0]));
 
 export function ExoBoard() {
   const perks = (damageModel as any).exoPerks?.perks ?? [];

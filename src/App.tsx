@@ -74,6 +74,7 @@ export default function App() {
         </div>
       )}
 
+      <div key={screen} className="screen-enter">
       {screen === 'Sandbox' && <Sandbox initialBuild={sandboxBuild} onBuildChange={setSandboxBuild} />}
       {screen === 'Enemies' && <EnemySelect />}
       {screen === 'Combos' && <Combos />}
@@ -82,6 +83,7 @@ export default function App() {
       {screen === 'Rings' && <RingsVault />}
       {screen === 'The Chain' && <TheChain onPreset={loadPreset} />}
       {screen === 'Lab Notes' && <LabNotes />}
+      </div>
       <SettingsBar />
     </div>
   );

@@ -2,12 +2,19 @@ import { useState } from 'react';
 import { loadAll } from '../data/loader';
 import { Sigil } from './Sigil';
 import { UnknownField } from './Signature';
+import { loadRingValues, saveRingValues } from './ringStore';
 
 const { damageModel } = loadAll();
 const rings = (damageModel as any).rings?.list ?? [];
 
 export function RingsVault() {
-  const [values, setValues] = useState<Record<string, string>>({});
+  const [values, setValues] = useState<Record<string, string>>(() => loadRingValues());
+
+  const update = (name: string, v: string) => {
+    const next = { ...values, [name]: v };
+    setValues(next);
+    saveRingValues(next);
+  };
 
   return (
     <div className="p-4">
@@ -28,7 +35,7 @@ export function RingsVault() {
                 step="0.01"
                 placeholder="?"
                 value={values[r.name] ?? ''}
-                onChange={e => setValues({ ...values, [r.name]: e.target.value })}
+                onChange={e => update(r.name, e.target.value)}
                 className="w-full mt-1 bg-black/40 border border-amber-800/40 rounded px-2 py-1 text-amber-100 text-sm"
               />
             </label>
