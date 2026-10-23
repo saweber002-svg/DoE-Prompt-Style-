@@ -1,7 +1,8 @@
 // Icon manifest. SVGs vendored from game-icons.net (CC-BY 3.0).
 // Vendored by the lead (Muse) 2026-10-22 from game-icons.net direct — the build
 // environment's GitHub-mirror paths 404'd; these are the canonical served SVGs.
-// Sigil rendering wiring is the UI project's next step; files + attribution are complete.
+// Round 2 vendored by the lead 2026-10-22 (weapons/zones/menu). Only weapon-sword and
+// weapon-club remain gapped (no verified slug found) — text fallback until closed.
 export const ICON_MANIFEST: { id: string; name: string; author: string; sourceUrl: string; license: string; file: string }[] = [
   { id: 'attack-power', name: "Attack Power", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/crossed-swords.html', license: 'CC-BY 3.0', file: 'attack-power.svg' },
   { id: 'criticals', name: "Criticals", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/target-arrows.html', license: 'CC-BY 3.0', file: 'criticals.svg' },
@@ -30,4 +31,29 @@ export const ICON_MANIFEST: { id: string; name: string; author: string; sourceUr
   { id: 'might', name: "Might", author: 'Delapouite', sourceUrl: 'https://game-icons.net/1x1/delapouite/biceps.html', license: 'CC-BY 3.0', file: 'might.svg' },
   { id: 'pierce', name: "Pierce", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/needle-drill.html', license: 'CC-BY 3.0', file: 'pierce.svg' },
   { id: 'exo-criticals', name: "EXO Criticals", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/headshot.html', license: 'CC-BY 3.0', file: 'exo-criticals.svg' },
+  { id: 'weapon-axe', name: "Axe", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/battle-axe.html', license: 'CC-BY 3.0', file: 'weapon-axe.svg' },
+  { id: 'weapon-hammer', name: "Hammer", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/claw-hammer.html', license: 'CC-BY 3.0', file: 'weapon-hammer.svg' },
+  { id: 'weapon-spear', name: "Spear", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/barbed-spear.html', license: 'CC-BY 3.0', file: 'weapon-spear.svg' },
+  { id: 'weapon-greatsword', name: "Greatsword", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/broadsword.html', license: 'CC-BY 3.0', file: 'weapon-greatsword.svg' },
+  { id: 'weapon-longsword', name: "Longsword", author: 'Delapouite', sourceUrl: 'https://game-icons.net/1x1/delapouite/sword-brandish.html', license: 'CC-BY 3.0', file: 'weapon-longsword.svg' },
+  { id: 'weapon-dagger', name: "Dagger", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/plain-dagger.html', license: 'CC-BY 3.0', file: 'weapon-dagger.svg' },
+  { id: 'weapon-bow', name: "Bow", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/pocket-bow.html', license: 'CC-BY 3.0', file: 'weapon-bow.svg' },
+  { id: 'weapon-crossbow', name: "Crossbow", author: 'Carl Olsen', sourceUrl: 'https://game-icons.net/1x1/carl-olsen/crossbow.html', license: 'CC-BY 3.0', file: 'weapon-crossbow.svg' },
+  { id: 'weapon-staff', name: "Staff", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/wizard-staff.html', license: 'CC-BY 3.0', file: 'weapon-staff.svg' },
+  { id: 'weapon-shield', name: "Shield", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/bordered-shield.html', license: 'CC-BY 3.0', file: 'weapon-shield.svg' },
+  { id: 'weapon-sickle', name: "Sickle", author: 'Delapouite', sourceUrl: 'https://game-icons.net/1x1/delapouite/sickle.html', license: 'CC-BY 3.0', file: 'weapon-sickle.svg' },
+  { id: 'zone-head', name: "Head (zone)", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/headshot.html', license: 'CC-BY 3.0', file: 'zone-head.svg' },
+  { id: 'zone-torso', name: "Torso (zone)", author: 'Delapouite', sourceUrl: 'https://game-icons.net/1x1/delapouite/chest-armor.html', license: 'CC-BY 3.0', file: 'zone-torso.svg' },
+  { id: 'zone-limbs', name: "Limbs (zone)", author: 'Delapouite', sourceUrl: 'https://game-icons.net/1x1/delapouite/arm.html', license: 'CC-BY 3.0', file: 'zone-limbs.svg' },
+  { id: 'zone-waist', name: "Waist (zone)", author: 'Delapouite', sourceUrl: 'https://game-icons.net/1x1/delapouite/belt-armor.html', license: 'CC-BY 3.0', file: 'zone-waist.svg' },
+  { id: 'zone-everywhere', name: "Everywhere (zone)", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/world.html', license: 'CC-BY 3.0', file: 'zone-everywhere.svg' },
+  { id: 'zone-face', name: "Face (zone)", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/drama-masks.html', license: 'CC-BY 3.0', file: 'zone-face.svg' },
+  { id: 'menu-sandbox', name: "Sandbox (menu)", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/castle.html', license: 'CC-BY 3.0', file: 'menu-sandbox.svg' },
+  { id: 'menu-enemies', name: "Enemies (menu)", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/monster-grasp.html', license: 'CC-BY 3.0', file: 'menu-enemies.svg' },
+  { id: 'menu-combos', name: "Combos (menu)", author: 'Delapouite', sourceUrl: 'https://game-icons.net/1x1/delapouite/puzzle.html', license: 'CC-BY 3.0', file: 'menu-combos.svg' },
+  { id: 'menu-perks', name: "Perks (menu)", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/laurel-crown.html', license: 'CC-BY 3.0', file: 'menu-perks.svg' },
+  { id: 'menu-exo', name: "EXO (menu)", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/android-mask.html', license: 'CC-BY 3.0', file: 'menu-exo.svg' },
+  { id: 'menu-rings', name: "Rings (menu)", author: 'Delapouite', sourceUrl: 'https://game-icons.net/1x1/delapouite/ring.html', license: 'CC-BY 3.0', file: 'menu-rings.svg' },
+  { id: 'menu-chain', name: "The Chain (menu)", author: 'Lorc', sourceUrl: 'https://game-icons.net/1x1/lorc/linked-rings.html', license: 'CC-BY 3.0', file: 'menu-chain.svg' },
+  { id: 'menu-lab-notes', name: "Lab Notes (menu)", author: 'Delapouite', sourceUrl: 'https://game-icons.net/1x1/delapouite/notebook.html', license: 'CC-BY 3.0', file: 'menu-lab-notes.svg' },
 ];
