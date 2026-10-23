@@ -1,19 +1,10 @@
-# Icon Gap List — updated Stage 2
+# Icon Gap List — Stage 2 status (build/ui-completion-2, updated by lead)
 
-Text-sigil fallbacks remain in use. No SVGs vendored this session (environment network constraints on bulk fetch). Priority order unchanged.
+**Vendored (2026-10-22, by Muse as lead — game-icons.net direct fetch; the GitHub-mirror raw paths the build environment tried do not resolve):** the full minimum bar — all 10 perks, all 10 rings, all 3 elements, all 4 EXO icons (27 SVGs in `src/assets/icons/`, entries in `manifest.ts`, attribution lines in `ATTRIBUTIONS.md`). White-on-black served SVGs; sigil recolor/render wiring in `Sigil` is the UI project's next step.
 
-## Still gapped (reason: SVG fetch not completed in this environment)
-### Perks
-Attack Power, Criticals, Throw Damage, Explosions, Area Damage, Stab Damage, Poison, Spectral Echo, Reload, Vampire
-
-### Rings
-Predator, Sundering, Scout's Signet, Venom Fang, Hexweaver, Blacksmith, Micro Amplifier, Duelist, Breaker's Band, Shadow Strike
-
-### EXO
-Power / Pullback, Might, Pierce, EXO Criticals
-
-### Elements
-Fire, Ice, Poison
+## Still gapped
+### Weapons
+axe, hammer, spear, greatsword, sword, longsword, dagger, bow, crossbow, staff, shield, club, sickle (weapon-type selector set — not in the minimum bar)
 
 ### Zone markers
 head, torso, limbs, waist, everywhere, face
@@ -22,6 +13,5 @@ head, torso, limbs, waist, everywhere, face
 Sandbox, Enemies, Combos, Perks, EXO, Rings, The Chain, Lab Notes
 
 ## Notes
-- Manifest stub at src/assets/icons/manifest.ts
-- Every future SVG must have ATTRIBUTIONS.md line before shipping.
-- No invented icons.
+- No invented icons. Every vendored SVG has an ATTRIBUTIONS.md line.
+- Text-sigil fallbacks remain in use until Sigil renders the manifest.
