@@ -3,10 +3,13 @@ import { loadAll } from '../data/loader';
 import { evaluateHit } from '../engine/formula';
 import type { Build, Target, WeaponType } from '../engine/types';
 import { ThreeNumbers, FactorChain, ProcPips, DistributionBar, ZoneFigure } from './Signature';
+import { Sigil } from './Sigil';
+import { loadRingValues, saveRingValues, getRingValue } from './ringStore';
 
 const { enemies: enemiesData, damageModel } = loadAll();
 const roster = enemiesData.enemies.filter((e: any) => e.roster);
 const weaponPerks = (damageModel as any).weaponPerks?.perks ?? [];
+const ringNames: string[] = ((damageModel as any).rings?.list ?? []).map((r: any) => r.name).filter(Boolean);
 
 const WEAPON_TYPES: WeaponType[] = [
   'axe', 'hammer', 'spear', 'greatsword',
@@ -105,6 +108,45 @@ export function Sandbox({ initialBuild, onBuildChange }: SandboxProps) {
             </button>
           ))}
         </div>
+        <div className="text-xs text-amber-200/70 mt-2">Rings</div>
+        {[0, 1].map(i => (
+          <div key={i} className="flex gap-1 items-center">
+            <select
+              value={build.rings[i].name ?? ''}
+              onChange={e => {
+                const name = e.target.value || null;
+                const val = name ? getRingValue(name) : null;
+                const rings = [...build.rings] as [any, any];
+                rings[i] = { name, userValue: val };
+                setBuild({ ...build, rings });
+              }}
+              className="flex-1 bg-black/40 border border-amber-800/50 rounded px-2 py-1 text-xs text-amber-100"
+            >
+              <option value="">— none —</option>
+              {ringNames.map((n: string) => <option key={n} value={n}>{n.split('/')[0]}</option>)}
+            </select>
+            {build.rings[i].name && (
+              <input
+                type="number"
+                step="0.01"
+                placeholder="?"
+                value={build.rings[i].userValue ?? ''}
+                onChange={e => {
+                  const name = build.rings[i].name!;
+                  const s = e.target.value;
+                  const map = loadRingValues();
+                  map[name] = s;
+                  saveRingValues(map);
+                  const rings = [...build.rings] as [any, any];
+                  rings[i] = { name, userValue: s === '' ? null : Number(s) };
+                  setBuild({ ...build, rings });
+                }}
+                className="w-16 bg-black/40 border border-amber-800/50 rounded px-1 py-1 text-xs text-amber-100"
+              />
+            )}
+            {build.rings[i].name && <Sigil name={build.rings[i].name!} />}
+          </div>
+        ))}
       </aside>
 
       <main className="flex-1 panel p-4 flex flex-col items-center">

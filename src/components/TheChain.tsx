@@ -1,5 +1,6 @@
 import { loadAll } from '../data/loader';
 import type { Build } from '../engine/types';
+import { getRingValue } from './ringStore';
 
 const { damageModel } = loadAll();
 
@@ -7,13 +8,17 @@ interface TheChainProps {
   onPreset?: (build: Partial<Build>) => void;
 }
 
-const PRESETS: Record<string, Partial<Build>> = {
-  'Attack Power': { weaponPerks: ['Attack Power'] },
-  'Stab Damage': { weaponPerks: ['Stab Damage'], attackType: 'thrust' },
-  'Power / Pullback': { exo: { powerPullback: true, might: false, pierce: false, exoCriticals: false } },
-  'Handling': { grip: '2H', weaponType: 'axe' },
-  "Scout's Signet": { rings: [{ name: "Scout's Signet / Precision Shot", userValue: 0.1 }, { name: null, userValue: null }] },
-  'Backstab': { rings: [{ name: 'Shadow Strike / Backstab', userValue: 0.15 }, { name: null, userValue: null }] },
+function ringPreset(name: string): Partial<Build> {
+  return { rings: [{ name, userValue: getRingValue(name) }, { name: null, userValue: null }] };
+}
+
+const PRESETS: Record<string, () => Partial<Build>> = {
+  'Attack Power': () => ({ weaponPerks: ['Attack Power'] }),
+  'Stab Damage': () => ({ weaponPerks: ['Stab Damage'], attackType: 'thrust' }),
+  'Power / Pullback': () => ({ exo: { powerPullback: true, might: false, pierce: false, exoCriticals: false } }),
+  'Handling': () => ({ grip: '2H', weaponType: 'axe' }),
+  "Scout's Signet": () => ringPreset("Scout's Signet / Precision Shot"),
+  'Backstab': () => ringPreset('Shadow Strike / Backstab'),
 };
 
 export function TheChain({ onPreset }: TheChainProps) {
@@ -25,13 +30,13 @@ export function TheChain({ onPreset }: TheChainProps) {
       <ol className="space-y-2 list-decimal list-inside">
         {chain.map((step: string, i: number) => {
           const presetKey = Object.keys(PRESETS).find(k => step.includes(k));
-          const preset = presetKey ? PRESETS[presetKey] : null;
+          const presetFn = presetKey ? PRESETS[presetKey] : null;
           return (
             <li key={i} className="panel p-3 text-sm">
               <div>{step}</div>
-              {preset && onPreset && (
+              {presetFn && onPreset && (
                 <button
-                  onClick={() => onPreset(preset)}
+                  onClick={() => onPreset(presetFn())}
                   className="mt-1 text-[10px] text-teal-300/80 underline"
                 >
                   Load preset → Sandbox
